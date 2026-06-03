@@ -33,6 +33,7 @@ def main():
         status = 'Работник'
     return status
 
+
 if __name__ == "__main__":
     users_status = main()
     print(users_status)
