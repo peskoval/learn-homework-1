@@ -14,8 +14,9 @@
 """
 import logging
 
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+import ephem
 
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO,
                     filename='bot.log')
@@ -42,6 +43,13 @@ def talk_to_me(update, context):
     update.message.reply_text(text)
 
 
+def get_constellation(update, context):
+    user_text = update.message.text.split()[1].capitalize()
+    result = ephem.constellation(user_text, ephem.compute())
+    if result:
+        print(f'The {user_text} in {result[1]} constellation.')
+
+
 def main():
     mybot = Updater(
         "КЛЮЧ, КОТОРЫЙ НАМ ВЫДАЛ BotFather",
@@ -50,8 +58,9 @@ def main():
     )
 
     dp = mybot.dispatcher
-    dp.add_handler(CommandHandler("start", greet_user))
+    dp.add_handler(CommandHandler('start', greet_user))
     dp.add_handler(MessageHandler(Filters.text, talk_to_me))
+    dp.add_handler(CommandHandler('planet', get_constellation))
 
     mybot.start_polling()
     mybot.idle()
